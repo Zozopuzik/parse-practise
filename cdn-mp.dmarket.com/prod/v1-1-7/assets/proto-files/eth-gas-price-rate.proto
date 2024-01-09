@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package eth_gas_price_rate;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dmarket/proto/service/eth_gas_price_rate;eth_gas_price_rate";
+
+service EthGasPriceRate {
+    rpc GetGasPrices (Empty) returns (GasPrices);
+    rpc GetGasPricesForTimestamp (google.protobuf.Timestamp) returns (GasPrices);
+}
+
+message Empty {
+}
+
+message GasPrices {
+    // Allowed keys are: "Gwei", "USD"
+    map<string, GasPriceVariants> Data = 1;
+    string GweiToUsdRate = 2;
+    google.protobuf.Timestamp Timestamp = 3;
+
+    uint64 SafeSeconds = 4;
+    uint64 ProposeSeconds = 5;
+    uint64 FastSeconds = 6;
+}
+
+message GasPriceVariants {
+    string Safe = 1;
+    string Propose = 2;
+    string Fast = 3;
+}
+

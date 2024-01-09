@@ -1,0 +1,226 @@
+syntax = "proto3";
+
+package message;
+
+option go_package = "github.com/dmarket/proto/service/websocket/message;message";
+
+message HistoryUpdatedMessage {
+    string AccountID = 1;
+}
+
+message BalanceUpdatedMessage {
+    string AccountID = 1;
+}
+
+message OfferLockChangedMessage {
+    string OfferID = 1;
+    bool IsLocked = 2;
+    string AccountID = 3;
+    string ItemID = 4;
+}
+
+message InstantPriceChangedMessage {
+    string ItemID = 1;
+    Money Price = 2;
+    string TargetID = 3;
+    Money ExchangePrice = 4;
+    bytes TargetMeta = 5;
+}
+
+message Money {
+    string Currency = 1;
+    string Amount = 2;
+}
+
+message InstantPriceUnavailableMessage {
+    string ItemID = 1;
+}
+
+message OfferRemovedMessage {
+    string OfferID = 1;
+    OfferRemoveReason Reason = 2;
+    string ItemID = 3;
+    //AccountID
+    string TriggeredBy = 4;
+}
+
+message OfferStatusChangedMessage {
+    string OfferID = 1;
+    OfferStatusChangedReason Reason = 2;
+    string ItemID = 3;
+    //AccountID
+    string TriggeredBy = 4;
+}
+
+enum OfferStatusChangedReason {
+    Unknown = 0;
+    Active = 1;
+    Locked = 2;
+    Reserved = 3;
+    Sold = 4;
+    Recalled = 5;
+}
+
+enum OfferRemoveReason {
+    OfferReasonUnknown = 0;
+    OfferReasonSold = 1;
+    OfferReasonRecalled = 2;
+}
+
+message AccountUpdatedMessage {
+    int64 CreatedAt = 2;
+}
+
+message MoneyMessage {
+    MoneyDepositType Type = 1;
+    int64 CreatedAt = 2;
+    MoneyPayload Payload = 3;
+}
+
+enum MoneyDepositType {
+    SuccessfulMoneyDepositEvent = 0;
+    SuccessfulWithdrawEvent = 1;
+    FailedMoneyDepositEvent = 2;
+    FailedWithdrawEvent = 3;
+    PendingMoneyDepositEvent = 4;
+    //    PendingMoneyWithdrawEvent = 5;
+}
+
+message MoneyPayload {
+    string Amount = 1;
+    string Currency = 2;
+    string TxID = 3;
+    string PaymentMethodID = 4;
+}
+
+message FeedCreatedMessage {
+    string FeedRowID = 1;
+    int64 CreatedAt = 2;
+    string OperationType = 3;
+}
+
+message FeedUpdatedMessage {
+    string FeedRowID = 1;
+    int64 UpdatedAt = 2;
+    string StateID = 3;
+    string StateCode = 4;
+    string OperationType = 5;
+}
+
+message CraftStatus {
+    Status Result = 1;
+    Error Err = 2;
+
+    enum Status {
+        Unknown = 0;
+        Completed = 1;
+        Failed = 2;
+    }
+
+    message Error {
+        string Code = 1;
+        string Message = 2;
+    }
+
+    message Asset {
+        string ID = 1;
+        string Title = 2;
+        string Image = 3;
+    }
+
+    repeated Asset Assets = 3;
+}
+
+message DropResult {
+
+    message Asset {
+        string ID = 1;
+        string Title = 2;
+        string Image = 3;
+        string Description = 4;
+    }
+
+    string StreamID = 1;
+    string Channel = 2;
+    Asset RewardAsset = 3;
+}
+
+message PromoAssetGift {
+    string PromotionID = 1;
+    message Asset {
+        string Title = 1;
+        string ImageURL = 2;
+    }
+    Asset Item = 2;
+}
+
+message InventoryBlacklisted {}
+
+message TransferStatusChanged {
+    string ID = 1;
+    string Status = 3;
+    TransferType Type = 4;
+
+    repeated string TotalAssets = 5 [deprecated=true];
+    repeated string ProcessedAssets = 6;
+
+    int64 CreatedAt = 7;
+    int64 UpdatedAt = 8;
+
+    string SteamTradeID = 9;
+    string SteamMessage = 10;
+
+    string SteamTradeStatus = 11;
+
+    // key old assetID value newAssetID after transfer
+    map<string, string> NewAssetMap = 12 [deprecated=true];
+    string TransferError = 13;
+
+    // Indicates user flow which requires items deposit.
+    // It can be InstantSale, PutOnSale or Exchange.
+    // For now it not moved to enum and can be arbitrary tag.
+    // It probably will change with flows processing moving to backend.
+    string Flow = 14;
+
+    // Movement represents all transferring assets movements during transfer.
+    repeated Movement Movements = 17;
+
+    BcTransaction BcTx = 18;
+
+    message BcTransaction {
+        string TxID = 1;
+        string TxLink = 2;
+    }
+
+    int64 SteamTradeCreatedAt = 19;
+    string SteamTradeCreatedBy = 20;
+    int64 SteamTradeCreatorLevel = 21;
+}
+
+enum MovementStatus {
+    MovementInProgress = 0;
+    MovementCompleted = 1;
+    MovementFailed = 2;
+    MovementRejected = 3;
+    MovementRolledBack = 4;
+}
+
+message Movement {
+    Asset Source = 1;
+    // Destination describes changes in asset after movement complete.
+    // If movement isn't completed - destination may be nil.
+    Asset Destination = 2;
+    MovementStatus Status = 3;
+}
+
+message Asset {
+    string ID = 1;
+    string ClassID = 2;
+    string GameID = 3;
+}
+
+enum TransferType {
+    None = 0;
+    Deposit = 1;
+    Withdraw = 2;
+}

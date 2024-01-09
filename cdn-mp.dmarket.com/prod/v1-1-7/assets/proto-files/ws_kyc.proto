@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package kyc_feed;
+
+option php_namespace = "App\\Services\\Centrifugo\\Events";
+option php_metadata_namespace = "App\\Services\\Centrifugo\\Events\\GBPMetadata";
+
+message ApplicationStatusChangedEvent {
+    int64 id = 1;
+    KycApplicationType type = 2;
+    KycStatus status = 3;
+}
+
+enum KycApplicationType {
+    TypeUnknown = 0;
+    TypeFull = 1;
+    TypeIdentity = 2;
+    TypeAddress = 3;
+}
+
+enum KycStatus {
+    StatusUnknown = 0;
+    StatusProcessing = 1;
+    StatusApproved = 2;
+    StatusDeclined = 3;
+}

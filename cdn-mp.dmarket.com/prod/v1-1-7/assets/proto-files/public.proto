@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package live_feed;
+
+option go_package = "github.com/dmarket/proto/service/live-feed;live_feed";
+
+message ItemSold {
+  string Title = 1;
+  string Image = 2;
+  GameType GameType = 3;
+  string GameSlug = 4;
+  string ItemSlug = 5;
+  repeated string Subtitle = 6;
+  string Exterior = 7;
+  string Price = 8;
+  int32 Discount = 9;
+  User Seller = 10;
+  User Buyer = 11;
+  MarketType MarketType = 12;
+}
+
+enum GameType {
+  blockchain = 0;
+  steam = 1;
+  ethereum = 2;
+}
+
+enum MarketType {
+  dmarket = 0;
+  f2f = 1;
+}
+
+message User {
+  string Wallet = 1;
+}
